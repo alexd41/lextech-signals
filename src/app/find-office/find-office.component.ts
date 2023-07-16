@@ -1,16 +1,31 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Injector, Input, Signal, ViewChild, inject, signal } from '@angular/core';
+import { Observable, debounceTime, distinctUntilChanged, fromEvent, map } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'app-find-office',
   template: `
   <div id="content-container">
-    <div id="name-column" class="column centre-content">Col 1</div>
-    <div id="address-column" class="column centre-content">Col 2</div>
-    <div id="job-column"class="column centre-content">Col 3</div>
+    <h1 id="search-title">Which LexisNexis office do you work at?</h1>
+    <input type="text" id="search-box" [(ngModel)]="userText" autocomplete="off">
+    <div id="output">
+      {{textOutput()}}
+    </div>
   </div>
   `,
   styleUrls: ['./find-office.component.less']
 })
 export class FindOfficeComponent {
 
+  public textOutput = signal('');
+
+  @Input() set userText(value: string) {
+    this.textOutput.set(this.filterText(value));
+  }
+
+  // Remove non-alphanumeric characters from the input string
+  private filterText(text: string): string {
+    return text.replace(/[^a-zA-Z0-9]/g, '');
+  }
 }
+
